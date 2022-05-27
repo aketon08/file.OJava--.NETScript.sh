@@ -4,7 +4,7 @@ const inp = document.getElementsByTagName("textarea")[1]
 function compile(code){
     var stack=[]
     code=code.split(" ")
-    stack+=code
+    stack.push(code)
     console.log(stack)
 }
 
