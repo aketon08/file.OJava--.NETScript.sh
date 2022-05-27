@@ -4,10 +4,8 @@ const inp = document.getElementsByTagName("textarea")[1]
 var stack=[];
 function compile(code){
     code=code.split(" ")
-    for(let i = 0; i < code.length; i++){
-        stack+=code[i]
-        console.log(stack)
-    }
+    stack+=code
+    console.log(stack)
 }
 
 document.addEventListener("click", evt => {
