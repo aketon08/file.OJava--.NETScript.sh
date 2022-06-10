@@ -14,15 +14,17 @@ function tokenise(code){
         // Checking for spaces and escaping them
         if(char == " "){
             if(token[token.length-1] == "\\"){
-                console.log(token)
+                //console.log(token)
                 token+=char;
             } else {
-                tokens.push(token.replace(/\\/g, ''))
+                tokens.push(token)
                 token="";
             }
         } 
         else {
-            token+=char;
+            if(char!="."){
+                token+=char;
+            }
         }
 
         if(index == code.length-1){
@@ -34,8 +36,9 @@ function tokenise(code){
             if(token[token.length-1]!="\\"){
                 tokens.push(token)
                 token=""
+                token+=char
             }
-        }
+        } 
 
         index++;
     }
