@@ -20,8 +20,7 @@ function tokenise(code){
                 tokens.push(token)
                 token="";
             }
-        } 
-        else {
+        } else {
             if(char!="."){
                 token+=char;
             }
