@@ -4,7 +4,7 @@ const inp = document.getElementsByTagName("textarea")[1]
 
 const ext = [
     ".exe", ".vbs", ".rb"
-]
+];
 
 function tokenise(code){
     var token="",
@@ -14,9 +14,9 @@ function tokenise(code){
         // Checking for spaces and escaping them
         if(char == " "){
             if(token[token.length-1] == "\\"){
-                //console.log(token)
+                // console.log(token)
                 token+=char;
-            } else {
+            }else{
                 tokens.push(token)
                 token="";
             }
@@ -30,23 +30,18 @@ function tokenise(code){
             tokens.push(token.replace(/\\/g, ''))
         }
 
-        //Checking for file extension
+        // Checking for file extension
         if(char == "."){
             if(token[token.length-1]!="\\"){
                 tokens.push(token)
                 token=""
-                token+=char
             }
+            token+=char
         } 
 
         index++;
     }
-    console.log(tokens)
-}
 
-document.addEventListener("click", evt => {
-    if(evt.target.tagName=="BUTTON"){
-        tokenise(textarea.value)
-        //console.log(textarea.value)
-    }
-})
+    // Textareas sanitises input so we need to remove the escape characters
+    return tokens.map(token => token.replace(/\\/g, ""));
+}
