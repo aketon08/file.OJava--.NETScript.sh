@@ -2,8 +2,12 @@ const textarea = document.getElementsByTagName("textarea")[0]
 const title = document.getElementsByTagName("p")[0]
 const inp = document.getElementsByTagName("textarea")[1]
 
+function $(element){
+    return document.querySelector(element);
+}
+
 const ext = [
-    ".exe", ".vbs", ".rb"
+    ".exe", ".vbs", ".rb", ".vvvvvv", ".cmd"
 ]
 
 function tokenise(code){
@@ -35,17 +39,73 @@ function tokenise(code){
             if(token[token.length-1]!="\\"){
                 tokens.push(token)
                 token=""
-                token+=char
             }
+            token+=char
         }
         index++;
     }
-    return console.log(tokens.map(token => token.replace(/\\/g, '')))
+    
+    for(var token of tokens){
+        if(isNaN(token)==false){
+            token=parseInt(token)
+        }
+    }
+    return tokens.map(token => token.replace(/\\/g, ''))
 }
 
-document.addEventListener("click", evt => {
-    if(evt.target.tagName=="BUTTON"){
-        tokenise(textarea.value)
-        //console.log(textarea.value)
+var compile = (code, inpval) => {
+    document.getElementById("output").value = "";
+    var stack=[];
+    for(var token of code){
+        console.log(stack)
+        if(ext.includes(token)){
+            if(token==".cmd"){
+                for(var inptoken of inpval){
+                    console.log(inptoken)
+                    if(isNaN(inptoken) == true){
+                        stack.push(inptoken)
+                    } else {
+                        stack.push(parseInt(inptoken))
+                    }
+                }
+            } else {
+                stdlib[token](stack, code);
+            }
+        } else {
+            if(isNaN(token) == true){
+                stack.push(token)
+            } else {
+                stack.push(parseInt(token))
+            }
+        }
     }
-})
+}
+
+function url(){
+    var code   =  textarea.value,
+        input  =  inp.value;
+    if(code||input){
+        console.log(location.hostname+"?"+encodeURIComponent(btoa(code))+"&"+encodeURIComponent(btoa(input)));
+    }
+}
+
+$("#run").onclick = () => {
+    var textval=tokenise(textarea.value);
+    if(inp.value.length>0){
+        var inpval=tokenise(inp.value);
+    }
+    console.log(textval,inpval);
+    compile(textval, inpval);
+}
+
+$("#link").onclick = () => {
+    url()
+}
+
+window.onload = () => {
+    if(location.search){
+        var [code, inp]  = location.search.slice(1).split("&").map(query => atob(decodeURIComponent(query)))
+        $("#code").value = code
+        $("#inp").value  = inp
+    }
+}
