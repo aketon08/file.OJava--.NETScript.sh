@@ -2,12 +2,12 @@ const textarea = document.getElementsByTagName("textarea")[0]
 const title = document.getElementsByTagName("p")[0]
 const inp = document.getElementsByTagName("textarea")[1]
 
-function $(element){
-    return document.querySelector(element);
+function $(el){
+    return document.querySelector(el);
 }
 
 const ext = [
-    ".exe", ".vbs", ".rb", ".vvvvvv", ".cmd"
+    ".txt", ".vbs", ".rb", ".vvvvvv", ".cmd", ".ts", ".tar", ".r", ".zip"
 ]
 
 function tokenise(code){
@@ -52,8 +52,10 @@ function tokenise(code){
     }
     return tokens.map(token => token.replace(/\\/g, ''))
 }
-
-var compile = (code, inpval) => {
+var compiled=[];
+const compile = (code, inpval) => {
+    var index=0;
+    compiled=[];
     document.getElementById("output").value = "";
     var stack=[];
     for(var token of code){
@@ -78,6 +80,11 @@ var compile = (code, inpval) => {
                 stack.push(parseInt(token))
             }
         }
+        if(index==code.length-1){
+            eval(compiled)
+        }
+        console.log(compiled)
+        index++;
     }
 }
 
@@ -109,3 +116,14 @@ window.onload = () => {
         $("#inp").value  = inp
     }
 }
+
+document.addEventListener("keydown", evt => {
+    if(evt.key=="Enter"&&(evt.ctrlKey||evt.metaKey)) {
+        var textval=tokenise(textarea.value);
+        if(inp.value.length>0){
+            var inpval=tokenise(inp.value);
+        }
+        console.log(textval,inpval);
+        compile(textval, inpval);
+    }
+})
