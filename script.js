@@ -52,16 +52,80 @@ function tokenise(code){
     }
     return tokens.map(token => token.replace(/\\/g, ''))
 }
+
+const lex = (code) => {
+    var tokens=[],
+        token="",
+        index=0;
+    for(var char of code.split("")) {
+        if(char == "."){
+            if(token[token.length-1]!="\\"){
+                if(ext.includes(token)){
+                    tokens.push({name:"command", value:token})
+                    token="";
+                } else if(token.includes("\"")) {
+                    token=token.slice(1, -2)
+                    console.log(token)
+                    tokens.push({name:"string", value:token})
+                    token="";
+                } else {
+                    tokens.push({name:"number", value:token})
+                    token="";
+                }
+            }
+            token+=char
+        } else if(char == " "){
+            if(token[token.length-1]=="\\"){
+                token.slice(0, -1);
+                console.log(token)
+                token+=char;
+            } else {
+                if(ext.includes(token)){
+                    tokens.push({name:"command", value:token})
+                    token="";
+                } else if(token.includes("\"")) {
+                    token=token.slice(1, -2)
+                    console.log(token)
+                    tokens.push({name:"string", value:token})
+                    token="";
+                } else {
+                    tokens.push({name:"number", value:token})
+                    token="";
+                }
+            }
+        } else {
+            token+=char;
+        }
+        if(index == code.length-1){
+            if(ext.includes(token)){
+                tokens.push({name:"command", value:token})
+                token="";
+            } else if(token.includes("\"")) {
+                token=token.slice(1, -2)
+                console.log(token)
+                tokens.push({name:"string", value:token})
+                token="";
+            } else {
+                tokens.push({name:"number", value:token})
+                token="";
+            }
+        }
+        index++;
+    }
+    return tokens;
+}
+
 var compiled=[];
 const compile = (code, inpval) => {
     var index=0;
     compiled=[];
     document.getElementById("output").value = "";
     var stack=[];
+    console.log(code)
     for(var token of code){
-        console.log(stack)
-        if(ext.includes(token)){
-            if(token==".cmd"){
+        if(token.name=="command"){
+            console.log(token.value)
+            if(token.value==".cmd"){
                 for(var inptoken of inpval){
                     console.log(inptoken)
                     if(isNaN(inptoken) == true){
@@ -71,13 +135,13 @@ const compile = (code, inpval) => {
                     }
                 }
             } else {
-                stdlib[token](stack, code);
+                console.log(stdlib[token.value](stack));
             }
         } else {
-            if(isNaN(token) == true){
-                stack.push(token)
+            if(token.name=="string"){
+                stack.push(token.value)
             } else {
-                stack.push(parseInt(token))
+                stack.push(parseInt(token.value))
             }
         }
         if(index==code.length-1){
@@ -97,7 +161,7 @@ function url(){
 }
 
 $("#run").onclick = () => {
-    var textval=tokenise(textarea.value);
+    var textval=lex(textarea.value);
     if(inp.value.length>0){
         var inpval=tokenise(inp.value);
     }
@@ -119,7 +183,7 @@ window.onload = () => {
 
 document.addEventListener("keydown", evt => {
     if(evt.key=="Enter"&&(evt.ctrlKey||evt.metaKey)) {
-        var textval=tokenise(textarea.value);
+        var textval=lex(textarea.value);
         if(inp.value.length>0){
             var inpval=tokenise(inp.value);
         }
