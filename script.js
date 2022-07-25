@@ -53,6 +53,16 @@ function tokenise(code){
     return tokens.map(token => token.replace(/\\/g, ''))
 }
 
+const lexlex = (token) => {
+    if(ext.includes(token)){
+        return ({name:"command", value:token})
+    } else if(token.includes("\"")) {
+        return ({name:"string", value:token})
+    } else {
+        return ({name:"number", value:token})
+    }
+}
+
 const lex = (code) => {
     var tokens=[],
         token="",
@@ -60,18 +70,8 @@ const lex = (code) => {
     for(var char of code.split("")) {
         if(char == "."){
             if(token[token.length-1]!="\\"){
-                if(ext.includes(token)){
-                    tokens.push({name:"command", value:token})
-                    token="";
-                } else if(token.includes("\"")) {
-                    token=token.slice(1, -2)
-                    console.log(token)
-                    tokens.push({name:"string", value:token})
-                    token="";
-                } else {
-                    tokens.push({name:"number", value:token})
-                    token="";
-                }
+                tokens.push(lexlex(token))
+                token=""
             }
             token+=char
         } else if(char == " "){
@@ -80,35 +80,15 @@ const lex = (code) => {
                 console.log(token)
                 token+=char;
             } else {
-                if(ext.includes(token)){
-                    tokens.push({name:"command", value:token})
-                    token="";
-                } else if(token.includes("\"")) {
-                    token=token.slice(1, -2)
-                    console.log(token)
-                    tokens.push({name:"string", value:token})
-                    token="";
-                } else {
-                    tokens.push({name:"number", value:token})
-                    token="";
-                }
+                tokens.push(lexlex(token))
+                token=""
             }
         } else {
             token+=char;
         }
         if(index == code.length-1){
-            if(ext.includes(token)){
-                tokens.push({name:"command", value:token})
-                token="";
-            } else if(token.includes("\"")) {
-                token=token.slice(1, -2)
-                console.log(token)
-                tokens.push({name:"string", value:token})
-                token="";
-            } else {
-                tokens.push({name:"number", value:token})
-                token="";
-            }
+            tokens.push(lexlex(token))
+            token=""
         }
         index++;
     }
@@ -145,9 +125,9 @@ const compile = (code, inpval) => {
             }
         }
         if(index==code.length-1){
+            console.log(compiled)
             eval(compiled)
         }
-        console.log(compiled)
         index++;
     }
 }
