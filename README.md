@@ -4,6 +4,6 @@ Objective-Java*#++--.NETScriptnotation.sh, (FileOJava for short, which is how i'
 
 ### Usage
 
-To use this language, go to the [online interpreter](https://fileojava.surge.sh). To learn the list of commands, you don't.
+To use this language, go to the [online interpreter](https://fileojava.surge.sh).
 
 ### Unfinished
